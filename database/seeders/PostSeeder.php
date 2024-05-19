@@ -14,11 +14,11 @@ class PostSeeder extends Seeder
      */
     public function run(): void
     {
-        Post::factory()->times(30)->create();
+        Post::factory()->times(300)->create();
 
         $user = User::where('email', AppConstants::MAIN_USER['email'])->first();
         if ($user) {
-            Post::factory()->times(5)->create(['user_id' => $user->id]);
+            Post::factory()->times(10)->create(['user_id' => $user->id]);
         }
     }
 }

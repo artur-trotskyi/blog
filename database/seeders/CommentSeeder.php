@@ -29,7 +29,7 @@ class CommentSeeder extends Seeder
             }
         }
 
-        for ($i = 0; $i < 3000; $i++) {
+        for ($i = 0; $i < 5000; $i++) {
             $randomComment = Comment::inRandomOrder()->first();
             if ($randomComment) {
                 $randomUserId = User::whereNot('id', $randomComment->user_id)->inRandomOrder()->first();
