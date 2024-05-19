@@ -26,7 +26,7 @@ class IndexCommentRequest extends FormRequest
             'postId' => ['required', 'string', Rule::exists('posts', 'id')],
             'itemsPerPage' => ['required', 'integer', 'min:-1'],
             'page' => ['required', 'integer', 'min:1'],
-            'sortBy' => ['sometimes', 'nullable', 'string'],
+            'sortBy' => ['sometimes', 'nullable', 'string', Rule::in(['created_at', 'username', 'email'])],
             'orderBy' => ['sometimes', 'nullable', 'string', Rule::in(['asc', 'desc'])],
         ];
     }

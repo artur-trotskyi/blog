@@ -29,17 +29,28 @@ class CommentRepository extends BaseRepository
      * @return LengthAwarePaginator
      */
     public function getFilteredWithPaginate(
-        string $postId, int $itemsPerPage = -1, string $sortBy = null, string $orderBy = null): LengthAwarePaginator
+        string $postId, int $itemsPerPage = 25, string $sortBy = null, string $orderBy = null): LengthAwarePaginator
     {
         $query = $this->model->where('post_id', $postId)->whereNull('parent_id');
 
         if ($sortBy && $orderBy) {
-            $query->orderBy($sortBy, $orderBy);
+            if (in_array($sortBy, ['username', 'email'])) {
+                $query->leftJoin('users', 'comments.user_id', '=', 'users.id')
+                    ->orderBy("users.$sortBy", $orderBy)
+                    ->select('comments.*');
+            } else {
+                $query->orderBy($sortBy, $orderBy);
+            }
+        } else {
+            $query->orderBy($this->sortBy, $this->sortOrder);
         }
-        $comments = $query->orderBy($this->sortBy, $this->sortOrder)->get();
 
-        $nestedComments = $comments->map(function ($comment) use ($sortBy, $orderBy) {
-            $comment->replies = $this->getNestedReplies($comment->id, $sortBy, $orderBy);
+        $comments = $query->get();
+
+        $replySortBy = $this->sortBy;
+        $replyOrderBy = $this->sortOrder;
+        $nestedComments = $comments->map(function ($comment) use ($replySortBy, $replyOrderBy) {
+            $comment->replies = $this->getNestedReplies($comment->id, $replySortBy, $replyOrderBy);
             return $comment;
         });
 
@@ -68,7 +79,7 @@ class CommentRepository extends BaseRepository
         if ($sortBy && $orderBy) {
             $query->orderBy($sortBy, $orderBy);
         }
-        $replies = $query->orderBy($this->sortBy, $this->sortOrder)->get();
+        $replies = $query->get();
 
         return $replies->map(function ($reply) use ($sortBy, $orderBy) {
             $reply->replies = $this->getNestedReplies($reply->id, $sortBy, $orderBy);
