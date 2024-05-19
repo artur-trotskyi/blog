@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Constants\AppConstants;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -16,13 +16,12 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::factory()->times(100)->create();
-        $mainUser = [
-            'username' => 'artur',
-            'email' => 'artur.trotskyi@ukr.net',
+        User::create([
+            'username' => AppConstants::MAIN_USER['username'],
+            'email' => AppConstants::MAIN_USER['email'],
             'email_verified_at' => now(),
-            'password' => Hash::make('password'),
+            'password' => Hash::make(AppConstants::MAIN_USER['password']),
             'remember_token' => Str::random(10),
-        ];
-        User::create($mainUser);
+        ]);
     }
 }
