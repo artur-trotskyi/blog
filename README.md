@@ -55,7 +55,7 @@ Errors fix
     chmod 777 -R bootstrap/cache
     chmod 777 -R storage
 
-Run migrations
+Run migrations (or use dump docker-compose-lamp/data/*.sql)
 
     php artisan migrate
 

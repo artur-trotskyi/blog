@@ -14,7 +14,7 @@ class PostSeeder extends Seeder
      */
     public function run(): void
     {
-        Post::factory()->times(300)->create();
+        Post::factory()->times(50)->create();
 
         $user = User::where('email', AppConstants::MAIN_USER['email'])->first();
         if ($user) {
