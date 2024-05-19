@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\PostRepository;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class PostService extends BaseService
@@ -24,7 +25,11 @@ class PostService extends BaseService
      */
     public function filter(int $itemsPerPage, int $page, string|null $sortBy, string|null $orderBy): array
     {
-        $posts = $this->repo->getFilteredWithPaginate($itemsPerPage, $page, $sortBy, $orderBy);
+        $cacheTag = config('cache.tags.posts');
+        $cacheKey = "itemsPerPage={$itemsPerPage}&page={$page}&sortBy={$sortBy}&orderBy={$orderBy}";
+        $posts = Cache::tags($cacheTag)->remember($cacheKey, config('cache.ttl'), function () use ($itemsPerPage, $page, $sortBy, $orderBy) {
+            return $this->repo->getFilteredWithPaginate($itemsPerPage, $page, $sortBy, $orderBy);
+        });
 
         return [
             'posts' => $posts->items(),

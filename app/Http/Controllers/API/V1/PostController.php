@@ -9,6 +9,7 @@ use App\Http\Resources\V1\Post\PostResource;
 use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class PostController extends Controller
 {
@@ -67,7 +68,11 @@ class PostController extends Controller
      */
     public function show(string $postId): PostResource
     {
-        $post = $this->postService->findById($postId);
+        $cacheTag = config('cache.tags.posts');
+        $cacheKey = "postId={$postId}";
+        $post = Cache::tags($cacheTag)->remember($cacheKey, config('cache.ttl'), function () use ($postId) {
+            return $this->postService->findById($postId);
+        });
 
         return new PostResource($post);
     }

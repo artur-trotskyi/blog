@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\CommentRepository;
+use Illuminate\Support\Facades\Cache;
 
 class CommentService extends BaseService
 {
@@ -23,7 +24,11 @@ class CommentService extends BaseService
      */
     public function filter(string $postId, int $itemsPerPage, string|null $sortBy, string|null $orderBy): array
     {
-        $comments = $this->repo->getFilteredWithPaginate($postId, $itemsPerPage, $sortBy, $orderBy);
+        $cacheTag = config('cache.tags.comments');
+        $cacheKey = "postId={$postId}&itemsPerPage={$itemsPerPage}&sortBy={$sortBy}&orderBy={$orderBy}";
+        $comments = Cache::tags($cacheTag)->remember($cacheKey, config('cache.ttl'), function () use ($postId, $itemsPerPage, $sortBy, $orderBy) {
+            return $this->repo->getFilteredWithPaginate($postId, $itemsPerPage, $sortBy, $orderBy);
+        });
 
         return [
             'comments' => $comments->items(),
