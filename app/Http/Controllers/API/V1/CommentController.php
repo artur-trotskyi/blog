@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\IndexCommentRequest;
+use App\Http\Requests\CommentIndexRequest;
+use App\Http\Requests\CommentStoreRequest;
 use App\Http\Resources\V1\Comment\CommentCollection;
+use App\Http\Resources\V1\Comment\CommentResource;
 use App\Models\Comment;
 use App\Services\CommentService;
 use Illuminate\Http\Request;
@@ -29,7 +31,7 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(IndexCommentRequest $request): CommentCollection
+    public function index(CommentIndexRequest $request): CommentCollection
     {
         $postId = $request->validated('postId');
         $itemsPerPage = $request->validated('itemsPerPage');
@@ -51,10 +53,23 @@ class CommentController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * @param CommentStoreRequest $request
+     * @return CommentResource
      */
-    public function store(Request $request)
+    public function store(CommentStoreRequest $request): CommentResource
     {
-        //
+        $postId = $request->validated('postId');
+        $parentCommentId = $request->validated('parentCommentId');
+        $massage = $request->validated('text');
+
+        $newComment = $this->commentService->create([
+            'post_id' => $postId,
+            'parent_id' => $parentCommentId,
+            'user_id' => auth()->id(),
+            'message' => $massage,
+        ]);
+
+        return new CommentResource($newComment);
     }
 
     /**

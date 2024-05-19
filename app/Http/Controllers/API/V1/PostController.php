@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\IndexPostRequest;
+use App\Http\Requests\PostIndexRequest;
 use App\Http\Resources\V1\Post\PostCollection;
 use App\Http\Resources\V1\Post\PostResource;
 use App\Models\Post;
@@ -29,10 +29,10 @@ class PostController extends Controller
 
     /**
      * Display a listing of the resource.
-     * @param IndexPostRequest $request
+     * @param PostIndexRequest $request
      * @return PostCollection
      */
-    public function index(IndexPostRequest $request): PostCollection
+    public function index(PostIndexRequest $request): PostCollection
     {
         $itemsPerPage = $request->validated('itemsPerPage');
         $page = $request->validated('page');

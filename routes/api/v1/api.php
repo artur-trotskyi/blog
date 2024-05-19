@@ -28,4 +28,5 @@ Route::middleware(['api', 'jwt.auth'])->prefix('v1')->group(function ($router) {
     Route::get('posts/{postId}', [PostController::class, 'show'])->name('posts.show');
 
     Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
+    Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
 });
